@@ -7,4 +7,6 @@ stat.xs
 t/basic.t
 t/benchmark.pl 
 t/chflags.t
+t/filehandle.t
 t/object.t
+t/underscore.t

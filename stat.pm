@@ -1,4 +1,4 @@
-#$Id: stat.pm,v 0.25 2001/12/19 09:22:39 dankogai Exp dankogai $
+#$Id: stat.pm,v 0.30 2001/12/28 09:47:54 dankogai Exp dankogai $
 
 package BSD::stat;
 
@@ -13,8 +13,8 @@ use AutoLoader;
 
 use vars qw($RCSID $VERSION);
 
-$RCSID = q$Id: stat.pm,v 0.25 2001/12/19 09:22:39 dankogai Exp dankogai $;
-$VERSION = do { my @r = (q$Revision: 0.25 $ =~ /\d+/g); sprintf "%d."."%02d" x $#r, @r };
+$RCSID = q$Id: stat.pm,v 0.30 2001/12/28 09:47:54 dankogai Exp dankogai $;
+$VERSION = do { my @r = (q$Revision: 0.30 $ =~ /\d+/g); sprintf "%d."."%02d" x $#r, @r };
 
 use vars qw(@ISA %EXPORT_TAGS @EXPORT_OK @EXPORT);
 
@@ -74,31 +74,26 @@ use constant Field =>{
     gen       => 17,
 };
 
-use vars qw($AUTOLOAD);
+# define attribute methods all at once w/o AUTOLOAD
+no strict 'refs';
+while (my ($method, $index) = each %{Field()}){
+    *$method = sub{ $_[0]->[$index] };
+}
+use strict;
 
-sub AUTOLOAD{
-    my $self = shift;
-    my $name = $AUTOLOAD; $name =~ s/^.*:://o;
-    $AUTOLOAD eq 'DESTROY' and return;
-    if (exists Field->{$name}){
-	return $self->[Field->{$name}];
-    }else{
-	croak "Field $name nonexistent!:";
-    }
+sub stat{
+    my $arg = shift || $_;
+    my $self = 
+	ref \$arg eq 'SCALAR' ? xs_stat($arg) : xs_fstat(fileno($arg));
+    wantarray ? @$self : bless $self;
 }
 
-sub anystat{
-    my $self = xs_stat(@_);
-    @$self or return;
-    if (wantarray){ # returns an array
-        return @$self;
-    }else{          # returns an object as in File::stat
-        return bless $self, caller();
-    }
+sub lstat{
+    my $arg = shift || $_;
+    my $self = 
+	ref \$arg eq 'SCALAR' ?  xs_lstat($arg) : xs_fstat(fileno($arg));
+    wantarray ? @$self : bless $self;
 }
-
-sub lstat { anystat(@_,0) }
-sub stat  { anystat(@_,1) }
 
 # chflag implementation
 # see <sys/stat.h>
@@ -144,6 +139,16 @@ BSD::stat - stat() with BSD 4.4 extentions
    $atime,$mtime,$ctime,$blksize,$blocks,
    $atimensec,$mtimensec,$ctimensec,$flags,$gen)
     = stat($filename); 
+
+  # BSD::stat now accepts filehandles, too
+
+  open F, "foo";
+  my @stat = stat(*F);
+
+  # omit an argument and it will use $_;
+
+  my $_ = "foo";
+  my stat = stat;
 
   # just like File::stat
 
@@ -211,13 +216,34 @@ just like CORE::chmod(), chflags() returns the number of files
 successfully changed. when an error occurs, it sets !$ so you can
 check what went wrong when you applied only one file.
 
+to unset all flags, simply
+
+  chflags 0, @files;
+
+=head2 PERFORMANCE
+
+You can use t/benchmark.pl to test the perfomance.  Here is the result
+on my system.
+
+
+Benchmark: timing 100000 iterations of BSD::stat, Core::stat,
+File::stat...
+BSD::stat:  3 wallclock secs ( 2.16 usr +  0.95 sys =  3.11 CPU) @
+32160.80/s (n=100000)
+Core::stat:  1 wallclock secs ( 1.18 usr +  0.76 sys =  1.94 CPU) @
+51612.90/s (n=100000)
+File::stat:  7 wallclock secs ( 6.40 usr +  0.93 sys =  7.33 CPU) @
+13646.06/s (n=100000)
+
+Not too bad, huh?
+
 =head2 EXPORT
 
 stat(), lstat(), chflags() and chflags-related constants are exported
 
 =head2 BUGS
 
-unlike CORE::stat, BSD::stat does not accept filehandle as an argument
+unlike CORE::stat, BSD::stat does not set _ special filehandle
 (as yet).
 
 Very BSD specific.  It will not work on any other platform.

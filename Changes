@@ -1,9 +1,16 @@
 #
-# $Id: Changes,v 0.25 2001/12/19 09:25:50 dankogai Exp dankogai $
+# $Id: Changes,v 0.30 2001/12/28 09:55:23 dankogai Exp dankogai $
 #
 
 Revision history for Perl extension BSD::stat.
 
+0.30 2001.12.28
+     BSD::stat is now more like CORE::stat
+     + Now accepts filehandle as an argument
+     + Now uses $_ when an argument is omitted
+     + More performance gain
+     - AUTOLOAD() no longer used.
+     ! README is now more dist-safe
 0.25 2001.12.19
      optimized: anystat()
      safer:     AUTOLOAD()

@@ -1,5 +1,5 @@
 #
-# $Id: basic.t,v 0.25 2001/12/19 09:22:39 dankogai Exp dankogai $
+# $Id: basic.t,v 0.30 2001/12/28 09:47:54 dankogai Exp dankogai $
 #
 # Before `make install' is performed this script should be runnable with
 # `make test'. After `make install' it should work as `perl test.pl'
@@ -16,7 +16,7 @@ BEGIN { plan tests => 15 };
 use BSD::stat;
 ok(1); # If we made it this far, we're ok.
 
-my $stat = BSD::stat::xs_stat('test', 0);
+my $stat = BSD::stat::stat('nonexistent');
 $! and ok(1);
 $Debug and warn $!;
 
