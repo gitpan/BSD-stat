@@ -1,6 +1,6 @@
 #!/usr/local/bin/perl
 #
-# $Id: benchmark.pl,v 1.0 2002/01/11 10:12:10 dankogai Exp $
+# $Id: benchmark.pl,v 1.20 2002/01/26 04:17:06 dankogai Exp dankogai $
 #
 
 use lib qw(blib/arch blib/lib);

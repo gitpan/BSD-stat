@@ -1,9 +1,15 @@
 #
-# $Id: Changes,v 1.11 2002/01/11 19:22:12 dankogai Exp dankogai $
+# $Id: Changes,v 1.20 2002/01/26 04:17:05 dankogai Exp dankogai $
 #
 
 Revision history for Perl extension BSD::stat.
 
+1.20 2001.01.26
+     ! stat.xs
+       * stat()->size returns negative value for files larger
+       than 2**31 bytes.  Now fixed. (newSViv -> newSVnv)
+       * following the changes above, types of other members
+       was also changed to match CORE::stat (newSViv -> newSVuv)
 1.11 2001.01.12
      ! backward compatible to 5.00503 (<miyagawa@edge.co.jp>);
        "use warnings" pragma is post-5.6.

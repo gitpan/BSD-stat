@@ -1,5 +1,5 @@
 /*
- * $Id: stat.xs,v 1.0 2002/01/11 10:12:10 dankogai Exp $
+ * $Id: stat.xs,v 1.20 2002/01/26 04:17:06 dankogai Exp dankogai $
  */
 
 #include "EXTERN.h"
@@ -42,17 +42,17 @@ st2aref(struct stat *st){
 
     sva[0]  = sv_2mortal(newSViv(PL_statcache.st_dev     = st->st_dev));
     sva[1]  = sv_2mortal(newSViv(PL_statcache.st_ino     = st->st_ino));
-    sva[2]  = sv_2mortal(newSViv(PL_statcache.st_mode    = st->st_mode));
-    sva[3]  = sv_2mortal(newSViv(PL_statcache.st_nlink   = st->st_nlink));
-    sva[4]  = sv_2mortal(newSViv(PL_statcache.st_uid     = st->st_uid));
-    sva[5]  = sv_2mortal(newSViv(PL_statcache.st_gid     = st->st_gid));
+    sva[2]  = sv_2mortal(newSVuv(PL_statcache.st_mode    = st->st_mode));
+    sva[3]  = sv_2mortal(newSVuv(PL_statcache.st_nlink   = st->st_nlink));
+    sva[4]  = sv_2mortal(newSVuv(PL_statcache.st_uid     = st->st_uid));
+    sva[5]  = sv_2mortal(newSVuv(PL_statcache.st_gid     = st->st_gid));
     sva[6]  = sv_2mortal(newSViv(PL_statcache.st_rdev    = st->st_rdev));
-    sva[7]  = sv_2mortal(newSViv(PL_statcache.st_size    = st->st_size));
+    sva[7]  = sv_2mortal(newSVnv(PL_statcache.st_size    = st->st_size));
     sva[8]  = sv_2mortal(newSViv(PL_statcache.st_atime   = st->st_atime));
     sva[9]  = sv_2mortal(newSViv(PL_statcache.st_mtime   = st->st_mtime));
     sva[10] = sv_2mortal(newSViv(PL_statcache.st_ctime   = st->st_ctime));
-    sva[11] = sv_2mortal(newSViv(PL_statcache.st_blksize = st->st_blksize));
-    sva[12] = sv_2mortal(newSViv(PL_statcache.st_blocks  = st->st_blocks));
+    sva[11] = sv_2mortal(newSVuv(PL_statcache.st_blksize = st->st_blksize));
+    sva[12] = sv_2mortal(newSVuv(PL_statcache.st_blocks  = st->st_blocks));
 
 
     /* BSD-specific */
@@ -60,8 +60,8 @@ st2aref(struct stat *st){
     sva[13] = sv_2mortal(newSViv(st->st_atimespec.tv_nsec));
     sva[14] = sv_2mortal(newSViv(st->st_mtimespec.tv_nsec));
     sva[15] = sv_2mortal(newSViv(st->st_ctimespec.tv_nsec));
-    sva[16] = sv_2mortal(newSViv(st->st_flags));
-    sva[17] = sv_2mortal(newSViv(st->st_gen));
+    sva[16] = sv_2mortal(newSVuv(st->st_flags));
+    sva[17] = sv_2mortal(newSVuv(st->st_gen));
     
     retval = newRV_noinc((SV *)av_make(NUMSTATMEM, sva));
     return retval;

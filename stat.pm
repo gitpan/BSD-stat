@@ -1,4 +1,4 @@
-#$Id: stat.pm,v 1.11 2002/01/11 19:22:12 dankogai Exp dankogai $
+#$Id: stat.pm,v 1.20 2002/01/26 04:17:06 dankogai Exp dankogai $
 
 package BSD::stat;
 
@@ -13,8 +13,8 @@ use AutoLoader;
 
 use vars qw($RCSID $VERSION $DEBUG);
 
-$RCSID = q$Id: stat.pm,v 1.11 2002/01/11 19:22:12 dankogai Exp dankogai $;
-$VERSION = do { my @r = (q$Revision: 1.11 $ =~ /\d+/g); sprintf "%d."."%02d" x $#r, @r };
+$RCSID = q$Id: stat.pm,v 1.20 2002/01/26 04:17:06 dankogai Exp dankogai $;
+$VERSION = do { my @r = (q$Revision: 1.20 $ =~ /\d+/g); sprintf "%d."."%02d" x $#r, @r };
 
 # In favor of speed, especially when $st_ series variables are exported,
 # Exporter is no longer used, though EXPORT variables are still used
