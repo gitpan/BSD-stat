@@ -1,4 +1,4 @@
-#$Id: stat.pm,v 0.43 2002/01/10 13:59:44 dankogai Exp dankogai $
+#$Id: stat.pm,v 1.0 2002/01/11 10:12:10 dankogai Exp dankogai $
 
 package BSD::stat;
 
@@ -13,8 +13,8 @@ use AutoLoader;
 
 use vars qw($RCSID $VERSION $DEBUG);
 
-$RCSID = q$Id: stat.pm,v 0.43 2002/01/10 13:59:44 dankogai Exp dankogai $;
-$VERSION = do { my @r = (q$Revision: 0.43 $ =~ /\d+/g); sprintf "%d."."%02d" x $#r, @r };
+$RCSID = q$Id: stat.pm,v 1.0 2002/01/11 10:12:10 dankogai Exp dankogai $;
+$VERSION = do { my @r = (q$Revision: 1.0 $ =~ /\d+/g); sprintf "%d."."%02d" x $#r, @r };
 
 use vars qw(@ISA %EXPORT_TAGS @EXPORT_OK @EXPORT);
 
@@ -179,33 +179,33 @@ BSD::stat - stat() with BSD 4.4 extentions
 =head1 DESCRIPTION
 
 This module's default exports override the core stat() and
-lstat() functions, replacing them with versions that contains BSD 4.4
-extentions such as flags.  This module also adds chflags function.
+lstat() functions, replacing them with versions that contain BSD 4.4
+extentions such as file flags.  This module also adds chflags function.
 
 Here are the meaning of the fields:
 
-  0 dev      device number of filesystem
-  1 ino      inode number
-  2 mode     file mode  (type and permissions)
-  3 nlink    number of (hard) links to the file
-  4 uid      numeric user ID of file's owner
-  5 gid      numeric group ID of file's owner
-  6 rdev     the device identifier (special files only)
-  7 size     total size of file, in bytes
-  8 atime    last access time in seconds since the epoch
-  9 mtime    last modify time in seconds since the epoch
- 10 ctime    inode change time (NOT creation time!) in seconds si
- 11 blksize  preferred block size for file system I/O
- 12 blocks   actual number of blocks allocated
- 13 atimensec;         /* nsec of last access */
- 14 mtimensec;         /* nsec of last data modification */
- 15 ctimensec;         /* nsec of last file status change */
- 16 flags;             /* user defined flags for file */
- 17 gen;               /* file generation number */
+  0 dev        device number of filesystem
+  1 ino        inode number
+  2 mode       file mode  (type and permissions)
+  3 nlink      number of (hard) links to the file
+  4 uid        numeric user ID of file's owner
+  5 gid        numeric group ID of file's owner
+  6 rdev       the device identifier (special files only)
+  7 size       total size of file, in bytes
+  8 atime      last access time in seconds since the epoch
+  9 mtime      last modify time in seconds since the epoch
+ 10 ctime      inode change time (NOT creation time!) in seconds si
+ 11 blksize    preferred block size for file system I/O
+ 12 blocks     actual number of blocks allocated
+ 13 atimensec  nsec of last access
+ 14 mtimensec  nsec of last data modification
+ 15 ctimensec  nsec of last file status change
+ 16 flags      user defined flags for file
+ 17 gen        file generation number
 
-When called with an array context, lstat() and stat() returns an array
-like CORE::stat,.  When called with a scalar context, it returns an
-object whose methods are named as above, just as File::stat.
+When called as array context, lstat() and stat() return an array
+like CORE::stat.  When called as scalar context, it returns an
+object whose methods are named as above, just like File::stat.
 
 Like CORE::stat(), BSD::stat supports _ filehandle.  It does set "stat
 cache" so the following -x _ operators can benefit.  Be careful,
@@ -274,7 +274,7 @@ Very BSD specific.  It will not work on any other platform.
 
 =head1 AUTHOR
 
-Dan Kogai E<dankogai@dan.co.jp>
+Dan Kogai E<lt>dankogai@dan.co.jpE<gt>
 
 =head1 SEE ALSO
 

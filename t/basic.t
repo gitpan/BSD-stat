@@ -1,5 +1,5 @@
 #
-# $Id: basic.t,v 0.41 2002/01/07 17:48:02 dankogai Exp $
+# $Id: basic.t,v 1.0 2002/01/11 10:12:10 dankogai Exp dankogai $
 #
 # Before `make install' is performed this script should be runnable with
 # `make test'. After `make install' it should work as `perl test.pl'

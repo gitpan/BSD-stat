@@ -1,5 +1,5 @@
 #
-# $Id: filehandle.t,v 0.43 2002/01/10 13:59:44 dankogai Exp dankogai $
+# $Id: filehandle.t,v 1.0 2002/01/11 10:12:10 dankogai Exp dankogai $
 #
 # Before `make install' is performed this script should be runnable with
 # `make test'. After `make install' it should work as `perl test.pl'
@@ -21,7 +21,7 @@ open F, $0 or die "$0:$!";
 my @fstat1 = lstat(*F);
 close F;
 
-#use FileHandle;
+use FileHandle;
 my $fh = FileHandle->new($0) or die "$0:$!";
 my @fstat2 = lstat($fh);
 undef $fh;

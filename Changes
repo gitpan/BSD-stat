@@ -1,9 +1,14 @@
 #
-# $Id: Changes,v 0.43 2002/01/10 13:59:44 dankogai Exp dankogai $
+# $Id: Changes,v 1.0 2002/01/11 10:12:10 dankogai Exp dankogai $
 #
 
 Revision history for Perl extension BSD::stat.
 
+1.00 2001.01.11
+     ! t/filehandle.t	misteriously commented out #use FileHandle
+			uncommented (<miyagawa@edge.co.jp>)
+     ! pod revised
+     ! version raised to 1.00
 0.43 2001.01.10
      ! possible memory leaks fixed this time
      ! prototype added as l?stat(;$);
