@@ -1,4 +1,4 @@
-#$Id: stat.pm,v 0.41 2002/01/07 17:48:02 dankogai Exp dankogai $
+#$Id: stat.pm,v 0.42 2002/01/08 09:03:40 dankogai Exp dankogai $
 
 package BSD::stat;
 
@@ -11,10 +11,10 @@ require Exporter;
 require DynaLoader;
 use AutoLoader;
 
-use vars qw($RCSID $VERSION);
+use vars qw($RCSID $VERSION $DEBUG);
 
-$RCSID = q$Id: stat.pm,v 0.41 2002/01/07 17:48:02 dankogai Exp dankogai $;
-$VERSION = do { my @r = (q$Revision: 0.41 $ =~ /\d+/g); sprintf "%d."."%02d" x $#r, @r };
+$RCSID = q$Id: stat.pm,v 0.42 2002/01/08 09:03:40 dankogai Exp dankogai $;
+$VERSION = do { my @r = (q$Revision: 0.42 $ =~ /\d+/g); sprintf "%d."."%02d" x $#r, @r };
 
 use vars qw(@ISA %EXPORT_TAGS @EXPORT_OK @EXPORT);
 
@@ -81,10 +81,19 @@ while (my ($method, $index) = each %{Field()}){
 }
 use strict;
 
+sub DESTROY{
+    $DEBUG or return;
+    carp "Destroying ", __PACKAGE__;
+    $DEBUG >= 2 or return;
+    eval qq{ require Devel::Peek; } and Devel::Peek::Dump $_[0];
+    return;
+}
+
 sub stat{
     my $arg = shift || $_;
     my $self = 
 	ref \$arg eq 'SCALAR' ? xs_stat($arg) : xs_fstat(fileno($arg), 0);
+    defined $self or return;
     return wantarray ? @$self : bless $self;
 }
 
@@ -92,6 +101,7 @@ sub lstat{
     my $arg = shift || $_;
     my $self =
 	ref \$arg eq 'SCALAR' ? xs_lstat($arg) : xs_fstat(fileno($arg), 1);
+    defined $self or return;
     return wantarray ? @$self : bless $self;
 }
 

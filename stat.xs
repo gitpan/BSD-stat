@@ -1,5 +1,5 @@
 /*
- * $Id: stat.xs,v 0.41 2002/01/07 17:48:02 dankogai Exp dankogai $
+ * $Id: stat.xs,v 0.42 2002/01/08 09:03:40 dankogai Exp dankogai $
  */
 
 #include "EXTERN.h"
@@ -32,9 +32,9 @@ setbang(int err)
 
 #define NUMSTATMEM 18
 
-static AV *
-st2av(struct stat *st){
-    AV* retval;
+static SV *
+st2aref(struct stat *st){
+    SV* retval;
     SV* sva[NUMSTATMEM];
     int i;
 
@@ -63,45 +63,43 @@ st2av(struct stat *st){
     sva[16] =  newSViv(st->st_flags);
     sva[17] =  newSViv(st->st_gen);
 
-    /* DO NOT MORTALIZE THIS! */
-    return av_make(NUMSTATMEM, sva);
+    retval = newRV_noinc((SV *)av_make(NUMSTATMEM, sva));
+    return retval;
 }
 
-#define EMPTY_AV newAV()
-
-static AV *
+static SV *
 xs_stat(char *path){
     struct stat st;
     int err = stat(path, &st);
-    PL_laststype = OP_STAT;
     if (setbang(err)){
-	return EMPTY_AV;
+	return &PL_sv_undef;
     }else{
-	return st2av(&st);
+	PL_laststype = OP_STAT;
+	return st2aref(&st);
     }
 }
 
-static AV *
+static SV *
 xs_lstat(char *path){
     struct stat st;
     int err = lstat(path, &st);
-    PL_laststype = OP_LSTAT;
     if (setbang(err)){
-	return EMPTY_AV;
+	return &PL_sv_undef;
     }else{
-	return st2av(&st);
+        PL_laststype = OP_LSTAT;
+	return st2aref(&st);
     }
 }
 
-static AV *
+static SV *
 xs_fstat(int fd, int waslstat){
     struct stat st;
     int err = fstat(fd, &st);
-    PL_laststype = waslstat ? OP_LSTAT : OP_STAT;
     if (setbang(err)){
-	return EMPTY_AV;
+	return &PL_sv_undef;
     }else{
-	return st2av(&st);
+        PL_laststype = waslstat ? OP_LSTAT : OP_STAT;
+	return st2aref(&st);
     }
 }
 
@@ -117,7 +115,7 @@ MODULE = BSD::stat		PACKAGE = BSD::stat
 
 PROTOTYPES: ENABLE
 
-AV *
+SV *
 xs_stat(path)
     char * path;
     CODE:
@@ -125,7 +123,7 @@ xs_stat(path)
     OUTPUT:
 	RETVAL
 
-AV *
+SV *
 xs_lstat(path)
     char * path;
     CODE:
@@ -133,7 +131,7 @@ xs_lstat(path)
     OUTPUT:
 	RETVAL
 
-AV *
+SV *
 xs_fstat(fd, waslstat)
     int    fd;
     int    waslstat;

@@ -1,5 +1,5 @@
 #
-# $Id: chflags.t,v 0.41 2002/01/07 17:48:02 dankogai Exp dankogai $
+# $Id: chflags.t,v 0.41 2002/01/07 17:48:02 dankogai Exp $
 #
 # Before `make install' is performed this script should be runnable with
 # `make test'. After `make install' it should work as `perl test.pl'
