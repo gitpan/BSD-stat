@@ -1,9 +1,15 @@
 #
-# $Id: Changes,v 0.30 2001/12/28 09:55:23 dankogai Exp dankogai $
+# $Id: Changes,v 0.40 2001/12/29 15:45:25 dankogai Exp dankogai $
 #
 
 Revision history for Perl extension BSD::stat.
 
+0.40 2001.12.30
+     BSD::stat is now as much like CORE::stat as a module can get!
+     + now supports _ special filehandle
+       (or stat cache now works).
+     ! too much perlgut--wrenching?
+     * so version is now 0.40, not just 0.31
 0.30 2001.12.28
      BSD::stat is now more like CORE::stat
      + Now accepts filehandle as an argument

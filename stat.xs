@@ -1,5 +1,5 @@
 /*
- * $Id: stat.xs,v 0.30 2001/12/28 09:47:54 dankogai Exp dankogai $
+ * $Id: stat.xs,v 0.40 2001/12/29 15:45:25 dankogai Exp dankogai $
  */
 
 #include "EXTERN.h"
@@ -49,6 +49,23 @@ st2av(struct stat *st, AV *av){
     av_push(av, newSViv(st->st_blksize));
     av_push(av, newSViv(st->st_blocks));
 
+    /* Set PL_statcache */
+
+    PL_statcache.st_dev     = st->st_dev;
+    PL_statcache.st_ino     = st->st_ino;
+    PL_statcache.st_mode    = st->st_mode;
+    PL_statcache.st_nlink   = st->st_nlink;
+    PL_statcache.st_uid     = st->st_uid;
+    PL_statcache.st_uid     = st->st_uid;
+    PL_statcache.st_gid     = st->st_gid;
+    PL_statcache.st_rdev    = st->st_rdev;
+    PL_statcache.st_size    = st->st_size;
+    PL_statcache.st_atime   = st->st_atime;
+    PL_statcache.st_mtime   = st->st_mtime;
+    PL_statcache.st_ctime   = st->st_ctime;
+    PL_statcache.st_blksize = st->st_blksize;
+    PL_statcache.st_blocks  = st->st_blocks;
+
     /* BSD-specifig */
 
     av_push(av, newSViv(st->st_atimespec.tv_nsec));
@@ -65,6 +82,7 @@ xs_stat(char *path){
     struct stat st;
     AV * result = newAV();
     int err = stat(path, &st);
+    PL_laststype = OP_STAT;
     if (setbang(err)){
 	return result;
     }else{
@@ -77,6 +95,7 @@ xs_lstat(char *path){
     struct stat st;
     AV * result = newAV();
     int err = lstat(path, &st);
+    PL_laststype = OP_LSTAT;
     if (setbang(err)){
 	return result;
     }else{
@@ -85,10 +104,11 @@ xs_lstat(char *path){
 }
 
 static AV *
-xs_fstat(int fd){
+xs_fstat(int fd, int waslstat){
     struct stat st;
     AV * result = newAV();
     int err = fstat(fd, &st);
+    PL_laststype = waslstat ? OP_LSTAT : OP_STAT;
     if (setbang(err)){
 	return result;
     }else{
@@ -123,10 +143,11 @@ xs_lstat(path)
 	RETVAL
 
 AV *
-xs_fstat(fd)
+xs_fstat(fd, waslstat)
     int    fd;
+    int    waslstat;
     CODE:
-	RETVAL = xs_fstat(fd);
+	RETVAL = xs_fstat(fd, waslstat);
     OUTPUT:
 	RETVAL
 

@@ -1,4 +1,4 @@
-#$Id: stat.pm,v 0.30 2001/12/28 09:47:54 dankogai Exp dankogai $
+#$Id: stat.pm,v 0.40 2001/12/29 15:45:25 dankogai Exp dankogai $
 
 package BSD::stat;
 
@@ -13,8 +13,8 @@ use AutoLoader;
 
 use vars qw($RCSID $VERSION);
 
-$RCSID = q$Id: stat.pm,v 0.30 2001/12/28 09:47:54 dankogai Exp dankogai $;
-$VERSION = do { my @r = (q$Revision: 0.30 $ =~ /\d+/g); sprintf "%d."."%02d" x $#r, @r };
+$RCSID = q$Id: stat.pm,v 0.40 2001/12/29 15:45:25 dankogai Exp dankogai $;
+$VERSION = do { my @r = (q$Revision: 0.40 $ =~ /\d+/g); sprintf "%d."."%02d" x $#r, @r };
 
 use vars qw(@ISA %EXPORT_TAGS @EXPORT_OK @EXPORT);
 
@@ -84,14 +84,14 @@ use strict;
 sub stat{
     my $arg = shift || $_;
     my $self = 
-	ref \$arg eq 'SCALAR' ? xs_stat($arg) : xs_fstat(fileno($arg));
+	ref \$arg eq 'SCALAR' ? xs_stat($arg) : xs_fstat(fileno($arg), 0);
     wantarray ? @$self : bless $self;
 }
 
 sub lstat{
     my $arg = shift || $_;
-    my $self = 
-	ref \$arg eq 'SCALAR' ?  xs_lstat($arg) : xs_fstat(fileno($arg));
+    my $self =
+	ref \$arg eq 'SCALAR' ? xs_lstat($arg) : xs_fstat(fileno($arg), 1);
     wantarray ? @$self : bless $self;
 }
 
@@ -150,6 +150,11 @@ BSD::stat - stat() with BSD 4.4 extentions
   my $_ = "foo";
   my stat = stat;
 
+  # stat($file) then -x _ works like CORE::stat();
+  stat("foo") and -x _ and print "foo is executable"
+
+  # but -x $file then stat(_) will not!!!
+
   # just like File::stat
 
   $st = stat($file) or die "No $file: $!";
@@ -189,8 +194,14 @@ Here are the meaning of the fields:
  17 gen;               /* file generation number */
 
 When called with an array context, lstat() and stat() returns an array
-like CORE::stat.  When called with a scalar context, it returns an
+like CORE::stat,.  When called with a scalar context, it returns an
 object whose methods are named as above, just as File::stat.
+
+Like CORE::stat(), BSD::stat supports _ filehandle.  It does set "stat
+cache" so the following -x _ operators can benefit.  Be careful,
+however, that BSD::stat::stat(_) will not work (or cannot be made to
+work) because BSD::stat::stat() holds more info than that is stored in
+Perl's internal stat cache.
 
 BSD::stat also adds chflags().  Like CORE::chmod it takes first
 argument as flags and any following arguments as filenames.  
@@ -243,20 +254,26 @@ stat(), lstat(), chflags() and chflags-related constants are exported
 
 =head2 BUGS
 
-unlike CORE::stat, BSD::stat does not set _ special filehandle
-(as yet).
+This is the best approximation of CORE::stat() and File::stat::stat()
+that module can go.
+
+In exchange of '_' support, BSD::stat now peeks and pokes too much of
+perlguts in terms tat BSD::stat uses such variables as PL_statcache
+that does not appear in "perldoc perlapi" and such.
 
 Very BSD specific.  It will not work on any other platform.
 
 =head1 AUTHOR
 
-Dan Kogai E<lt>dankogai@dan.co.jp<gt>
+Dan Kogai E<dankogai@dan.co.jp>
 
 =head1 SEE ALSO
 
 L<chflags(2)>
 L<stat(2)>
-L<perl>.
+L<File::stat>
+L<perldoc -f -x>
+L<perdoc -f stat>
 
 =head1 COPYRIGHT
 

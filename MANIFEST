@@ -9,4 +9,5 @@ t/benchmark.pl
 t/chflags.t
 t/filehandle.t
 t/object.t
+t/statcache.t
 t/underscore.t

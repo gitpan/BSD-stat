@@ -1,5 +1,5 @@
 #
-# $Id: underscore.t,v 0.30 2001/12/28 09:47:54 dankogai Exp dankogai $
+# $Id: underscore.t,v 0.40 2001/12/29 15:45:25 dankogai Exp dankogai $
 #
 # Before `make install' is performed this script should be runnable with
 # `make test'. After `make install' it should work as `perl test.pl'
