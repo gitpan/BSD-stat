@@ -1,5 +1,5 @@
 #
-# $Id: chflags.t,v 0.40 2001/12/29 15:45:25 dankogai Exp dankogai $
+# $Id: chflags.t,v 0.41 2002/01/07 17:48:02 dankogai Exp dankogai $
 #
 # Before `make install' is performed this script should be runnable with
 # `make test'. After `make install' it should work as `perl test.pl'
@@ -18,9 +18,10 @@ use File::Copy;
 
 my $dummy = $0; $dummy =~ s,([^/]+)$,dummy,o;
 copy($0, $dummy) or die "copy $0 -> $dummy failed!";
-
 chflags(UF_IMMUTABLE, $dummy) ? ok(1) : ok(0);
+
 lstat($dummy)->flags == UF_IMMUTABLE ? ok(1) : ok(0);
+
 unlink($dummy) ? ok(0) : ok(1);
 $Debug and warn $!;
 chflags(0, $dummy) ? ok(1) : ok(0);

@@ -1,4 +1,4 @@
-#$Id: stat.pm,v 0.40 2001/12/29 15:45:25 dankogai Exp dankogai $
+#$Id: stat.pm,v 0.41 2002/01/07 17:48:02 dankogai Exp dankogai $
 
 package BSD::stat;
 
@@ -13,8 +13,8 @@ use AutoLoader;
 
 use vars qw($RCSID $VERSION);
 
-$RCSID = q$Id: stat.pm,v 0.40 2001/12/29 15:45:25 dankogai Exp dankogai $;
-$VERSION = do { my @r = (q$Revision: 0.40 $ =~ /\d+/g); sprintf "%d."."%02d" x $#r, @r };
+$RCSID = q$Id: stat.pm,v 0.41 2002/01/07 17:48:02 dankogai Exp dankogai $;
+$VERSION = do { my @r = (q$Revision: 0.41 $ =~ /\d+/g); sprintf "%d."."%02d" x $#r, @r };
 
 use vars qw(@ISA %EXPORT_TAGS @EXPORT_OK @EXPORT);
 
@@ -85,14 +85,14 @@ sub stat{
     my $arg = shift || $_;
     my $self = 
 	ref \$arg eq 'SCALAR' ? xs_stat($arg) : xs_fstat(fileno($arg), 0);
-    wantarray ? @$self : bless $self;
+    return wantarray ? @$self : bless $self;
 }
 
 sub lstat{
     my $arg = shift || $_;
     my $self =
 	ref \$arg eq 'SCALAR' ? xs_lstat($arg) : xs_fstat(fileno($arg), 1);
-    wantarray ? @$self : bless $self;
+    return wantarray ? @$self : bless $self;
 }
 
 # chflag implementation
@@ -234,8 +234,7 @@ to unset all flags, simply
 =head2 PERFORMANCE
 
 You can use t/benchmark.pl to test the perfomance.  Here is the result
-on my system.
-
+on my FreeBSD.
 
 Benchmark: timing 100000 iterations of BSD::stat, Core::stat,
 File::stat...

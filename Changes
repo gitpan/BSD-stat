@@ -1,9 +1,12 @@
 #
-# $Id: Changes,v 0.40 2001/12/29 15:45:25 dankogai Exp dankogai $
+# $Id: Changes,v 0.41 2002/01/07 17:46:55 dankogai Exp $
 #
 
 Revision history for Perl extension BSD::stat.
 
+0.41 2001.01.08
+     ! stat.xs is more compliant with perlxs guidelines
+     ! further code optimization
 0.40 2001.12.30
      BSD::stat is now as much like CORE::stat as a module can get!
      + now supports _ special filehandle
