@@ -1,5 +1,5 @@
 /*
- * $Id: stat.xs,v 1.20 2002/01/26 04:17:06 dankogai Exp dankogai $
+ * $Id: stat.xs,v 1.21 2002/01/28 15:54:38 dankogai Exp dankogai $
  */
 
 #include "EXTERN.h"
@@ -8,6 +8,20 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
+
+/*
+ * Perl prior to 5.6.0 lacks newSVuv()
+ * Though perl 5.00503 does have sv_setuv() statcache uses IV instead.
+ * so we simply define newSVuv newSViv (Ugh!)
+ * I thank Sergey Skvortsov <skv@protey.ru> for reporting this problem.
+ *
+ * Perl prior to 5.6.0 lacks PERL_API_VERSION macro so we use it
+ * to tell the difference
+ */
+
+#ifndef PERL_API_VERSION
+#define newSVuv newSViv
+#endif
 
 static int
 not_here(char *s)

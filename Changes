@@ -1,9 +1,14 @@
 #
-# $Id: Changes,v 1.20 2002/01/26 04:17:05 dankogai Exp dankogai $
+# $Id: Changes,v 1.21 2002/01/28 15:54:38 dankogai Exp dankogai $
 #
 
 Revision history for Perl extension BSD::stat.
 
+1.21 2001.01.29
+     ! stat.xs
+       * newSVuv() that prevented perl prior to 5.6.0 from compiling
+         was fixed.  For perl prior to 5.6.0 newSViv() is used
+	 (That's how Perl's internal stat() behaves).
 1.20 2001.01.26
      ! stat.xs
        * stat()->size returns negative value for files larger
