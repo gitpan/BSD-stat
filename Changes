@@ -1,9 +1,12 @@
 #
-# $Id: Changes,v 0.42 2002/01/08 09:03:40 dankogai Exp dankogai $
+# $Id: Changes,v 0.43 2002/01/10 13:59:44 dankogai Exp dankogai $
 #
 
 Revision history for Perl extension BSD::stat.
 
+0.43 2001.01.10
+     ! possible memory leaks fixed this time
+     ! prototype added as l?stat(;$);
 0.42 2001.01.08
      ! possible memory leaks fixed
      ! OP_STAT and OP_LSTAT is set when and only when the

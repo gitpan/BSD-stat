@@ -1,4 +1,4 @@
-#$Id: stat.pm,v 0.42 2002/01/08 09:03:40 dankogai Exp dankogai $
+#$Id: stat.pm,v 0.43 2002/01/10 13:59:44 dankogai Exp dankogai $
 
 package BSD::stat;
 
@@ -13,8 +13,8 @@ use AutoLoader;
 
 use vars qw($RCSID $VERSION $DEBUG);
 
-$RCSID = q$Id: stat.pm,v 0.42 2002/01/08 09:03:40 dankogai Exp dankogai $;
-$VERSION = do { my @r = (q$Revision: 0.42 $ =~ /\d+/g); sprintf "%d."."%02d" x $#r, @r };
+$RCSID = q$Id: stat.pm,v 0.43 2002/01/10 13:59:44 dankogai Exp dankogai $;
+$VERSION = do { my @r = (q$Revision: 0.43 $ =~ /\d+/g); sprintf "%d."."%02d" x $#r, @r };
 
 use vars qw(@ISA %EXPORT_TAGS @EXPORT_OK @EXPORT);
 
@@ -75,11 +75,11 @@ use constant Field =>{
 };
 
 # define attribute methods all at once w/o AUTOLOAD
-no strict 'refs';
+
 while (my ($method, $index) = each %{Field()}){
+    no strict 'refs';
     *$method = sub{ $_[0]->[$index] };
 }
-use strict;
 
 sub DESTROY{
     $DEBUG or return;
@@ -89,7 +89,7 @@ sub DESTROY{
     return;
 }
 
-sub stat{
+sub stat(;$){
     my $arg = shift || $_;
     my $self = 
 	ref \$arg eq 'SCALAR' ? xs_stat($arg) : xs_fstat(fileno($arg), 0);
@@ -97,7 +97,7 @@ sub stat{
     return wantarray ? @$self : bless $self;
 }
 
-sub lstat{
+sub lstat(;$){
     my $arg = shift || $_;
     my $self =
 	ref \$arg eq 'SCALAR' ? xs_lstat($arg) : xs_fstat(fileno($arg), 1);

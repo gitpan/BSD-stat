@@ -1,5 +1,5 @@
 #
-# $Id: filehandle.t,v 0.40 2001/12/29 15:45:25 dankogai Exp $
+# $Id: filehandle.t,v 0.43 2002/01/10 13:59:44 dankogai Exp dankogai $
 #
 # Before `make install' is performed this script should be runnable with
 # `make test'. After `make install' it should work as `perl test.pl'
@@ -27,7 +27,7 @@ my @fstat2 = lstat($fh);
 undef $fh;
 
 for my $i (0..$#lstat){
-    $lstat[$i] == $fstat1[$i] ? ok(1) : ok(0);
-    $lstat[$i] == $fstat2[$i] ? ok(1) : ok(0);
+    ok($lstat[$i] == $fstat1[$i]);
+    ok($lstat[$i] == $fstat2[$i]);
 }
 $Debug and warn join(",", @fstat1), "\n";
