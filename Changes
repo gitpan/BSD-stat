@@ -4,6 +4,8 @@
 
 Revision history for Perl extension BSD::stat.
 
+0.24 2001.12.18
+     fixed: lstat() and stat() behaved the same.
 0.23 2001.12.17
      fixed: $scalar = lstat("nonexistent") wrongly got a reference
      which always evaluates true.  Now it returns undef when stat

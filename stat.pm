@@ -1,4 +1,4 @@
-#$Id: stat.pm,v 0.23 2001/12/17 03:47:35 dankogai Exp dankogai $
+#$Id: stat.pm,v 0.24 2001/12/17 16:39:34 dankogai Exp dankogai $
 
 package BSD::stat;
 
@@ -13,8 +13,8 @@ use AutoLoader;
 
 use vars qw($RCSID $VERSION);
 
-$RCSID = q$Id: stat.pm,v 0.23 2001/12/17 03:47:35 dankogai Exp dankogai $;
-$VERSION = do { my @r = (q$Revision: 0.23 $ =~ /\d+/g); sprintf "%d."."%02d" x $#r, @r };
+$RCSID = q$Id: stat.pm,v 0.24 2001/12/17 16:39:34 dankogai Exp dankogai $;
+$VERSION = do { my @r = (q$Revision: 0.24 $ =~ /\d+/g); sprintf "%d."."%02d" x $#r, @r };
 
 use vars qw(@ISA %EXPORT_TAGS @EXPORT_OK @EXPORT);
 
@@ -99,7 +99,7 @@ sub anystat{
     }
 }
 
-sub lstat { anystat(@_,1) }
+sub lstat { anystat(@_,0) }
 sub stat  { anystat(@_,1) }
 
 # chflag implementation

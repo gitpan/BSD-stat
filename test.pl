@@ -1,5 +1,5 @@
 #
-# $Id: test.pl,v 0.21 2001/12/16 22:51:55 dankogai Exp dankogai $
+# $Id: test.pl,v 0.22 2001/12/17 16:43:45 dankogai Exp dankogai $
 #
 # Before `make install' is performed this script should be runnable with
 # `make test'. After `make install' it should work as `perl test.pl'
@@ -11,7 +11,7 @@
 use Test;
 use strict;
 my $Debug = 0;
-BEGIN { plan tests => 28 };
+BEGIN { plan tests => 33 };
 
 use BSD::stat;
 ok(1); # If we made it this far, we're ok.
