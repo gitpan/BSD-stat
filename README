@@ -1,0 +1,33 @@
+#
+# $Id$
+#
+
+BSD/stat
+========
+
+       This module's default exports override the core stat() and
+       lstat() functions, replacing them with versions that con-
+       tains BSD 4.4 extentions such as flags.  This module also
+       adds chflags function.
+
+INSTALLATION
+
+To install this module type the following:
+
+   perl Makefile.PL
+   make
+   make test
+   make install
+
+DEPENDENCIES
+
+This module requires these other modules and libraries:
+
+  blah blah blah
+
+COPYRIGHT AND LICENCE
+
+Put the correct copyright and licence information here.
+
+Copyright (C) 2001 Dan Kogai
+

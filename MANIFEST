@@ -1,0 +1,7 @@
+Changes
+Makefile.PL
+MANIFEST
+README
+stat.pm
+stat.xs
+test.pl
