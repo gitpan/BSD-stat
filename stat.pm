@@ -1,4 +1,4 @@
-#$Id: stat.pm,v 0.24 2001/12/17 16:39:34 dankogai Exp dankogai $
+#$Id: stat.pm,v 0.25 2001/12/19 09:22:39 dankogai Exp dankogai $
 
 package BSD::stat;
 
@@ -13,8 +13,8 @@ use AutoLoader;
 
 use vars qw($RCSID $VERSION);
 
-$RCSID = q$Id: stat.pm,v 0.24 2001/12/17 16:39:34 dankogai Exp dankogai $;
-$VERSION = do { my @r = (q$Revision: 0.24 $ =~ /\d+/g); sprintf "%d."."%02d" x $#r, @r };
+$RCSID = q$Id: stat.pm,v 0.25 2001/12/19 09:22:39 dankogai Exp dankogai $;
+$VERSION = do { my @r = (q$Revision: 0.25 $ =~ /\d+/g); sprintf "%d."."%02d" x $#r, @r };
 
 use vars qw(@ISA %EXPORT_TAGS @EXPORT_OK @EXPORT);
 
@@ -78,8 +78,8 @@ use vars qw($AUTOLOAD);
 
 sub AUTOLOAD{
     my $self = shift;
-    my $name = $AUTOLOAD;
-    $name =~ s/^.*:://o;
+    my $name = $AUTOLOAD; $name =~ s/^.*:://o;
+    $AUTOLOAD eq 'DESTROY' and return;
     if (exists Field->{$name}){
 	return $self->[Field->{$name}];
     }else{
@@ -88,14 +88,12 @@ sub AUTOLOAD{
 }
 
 sub anystat{
+    my $self = xs_stat(@_);
+    @$self or return;
     if (wantarray){ # returns an array
-	my $result = xs_stat(@_);
-	return @$result;
+        return @$self;
     }else{          # returns an object as in File::stat
-	my ($path,$type) = @_;
-	my $pkg = caller;
-	my $self  =  xs_stat($path, $type);
-	return @$self ? bless $self, $pkg : undef;
+        return bless $self, caller();
     }
 }
 

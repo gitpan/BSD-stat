@@ -1,7 +1,10 @@
 Changes
-Makefile.PL
 MANIFEST
+Makefile.PL
 README
 stat.pm
 stat.xs
-test.pl
+t/basic.t
+t/benchmark.pl 
+t/chflags.t
+t/object.t

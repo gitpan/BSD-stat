@@ -1,9 +1,14 @@
 #
-# $Id: Changes,v 0.23 2001/12/17 03:50:09 dankogai Exp dankogai $
+# $Id: Changes,v 0.25 2001/12/19 09:25:50 dankogai Exp dankogai $
 #
 
 Revision history for Perl extension BSD::stat.
 
+0.25 2001.12.19
+     optimized: anystat()
+     safer:     AUTOLOAD()
+     added:	t/benchmark.pl
+     changed:	test.pl -> t/*.t
 0.24 2001.12.18
      fixed: lstat() and stat() behaved the same.
 0.23 2001.12.17
