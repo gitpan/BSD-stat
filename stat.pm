@@ -1,4 +1,4 @@
-#$Id: stat.pm,v 0.21 2001/12/16 22:50:11 dankogai Exp dankogai $
+#$Id: stat.pm,v 0.22 2001/12/17 00:03:46 dankogai Exp dankogai $
 
 package BSD::stat;
 
@@ -13,8 +13,8 @@ use AutoLoader;
 
 use vars qw($RCSID $VERSION);
 
-$RCSID = q$Id: stat.pm,v 0.21 2001/12/16 22:50:11 dankogai Exp dankogai $;
-$VERSION = do { my @r = (q$Revision: 0.21 $ =~ /\d+/g); sprintf "%d."."%02d" x $#r, @r };
+$RCSID = q$Id: stat.pm,v 0.22 2001/12/17 00:03:46 dankogai Exp dankogai $;
+$VERSION = do { my @r = (q$Revision: 0.22 $ =~ /\d+/g); sprintf "%d."."%02d" x $#r, @r };
 
 use vars qw(@ISA %EXPORT_TAGS @EXPORT_OK @EXPORT);
 
@@ -50,8 +50,6 @@ use vars qw(@ISA %EXPORT_TAGS @EXPORT_OK @EXPORT);
 	     SF_APPEND
 	     SF_NOUNLINK
 	     );
-
-$VERSION = '0.01';
 
 bootstrap BSD::stat $VERSION; # make XS available;
 

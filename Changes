@@ -1,9 +1,11 @@
 #
-# $Id: Changes,v 0.21 2001/12/16 22:51:10 dankogai Exp dankogai $
+# $Id: Changes,v 0.22 2001/12/17 00:04:43 dankogai Exp dankogai $
 #
 
 Revision history for Perl extension BSD::stat.
 
+0.22 2001.12.17
+     Debris in stat.pm removed; duplicate occurance of $VERSION
 0.21 2001.12.17
      First preview release
 0.01 2001.12.17
