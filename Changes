@@ -1,9 +1,14 @@
 #
-# $Id: Changes,v 1.0 2002/01/11 10:12:10 dankogai Exp dankogai $
+# $Id: Changes,v 1.10 2002/01/11 15:54:48 dankogai Exp dankogai $
 #
 
 Revision history for Perl extension BSD::stat.
 
+1.10 2001.01.12
+     + $st_* variable exported with :FILED tag.  BSD::stat is now
+       fully upper-compatible with File::stat (but with performance
+       penalty.  See pod for details)
+     ! pod revised
 1.00 2001.01.11
      ! t/filehandle.t	misteriously commented out #use FileHandle
 			uncommented (<miyagawa@edge.co.jp>)

@@ -1,5 +1,5 @@
 #
-# $Id: filehandle.t,v 1.0 2002/01/11 10:12:10 dankogai Exp dankogai $
+# $Id: filehandle.t,v 1.0 2002/01/11 10:12:10 dankogai Exp $
 #
 # Before `make install' is performed this script should be runnable with
 # `make test'. After `make install' it should work as `perl test.pl'

@@ -1,4 +1,4 @@
-#$Id: stat.pm,v 1.0 2002/01/11 10:12:10 dankogai Exp dankogai $
+#$Id: stat.pm,v 1.10 2002/01/11 15:54:48 dankogai Exp dankogai $
 
 package BSD::stat;
 
@@ -13,47 +13,73 @@ use AutoLoader;
 
 use vars qw($RCSID $VERSION $DEBUG);
 
-$RCSID = q$Id: stat.pm,v 1.0 2002/01/11 10:12:10 dankogai Exp dankogai $;
-$VERSION = do { my @r = (q$Revision: 1.0 $ =~ /\d+/g); sprintf "%d."."%02d" x $#r, @r };
+$RCSID = q$Id: stat.pm,v 1.10 2002/01/11 15:54:48 dankogai Exp dankogai $;
+$VERSION = do { my @r = (q$Revision: 1.10 $ =~ /\d+/g); sprintf "%d."."%02d" x $#r, @r };
 
-use vars qw(@ISA %EXPORT_TAGS @EXPORT_OK @EXPORT);
+# In favor of speed, especially when $st_ series variables are exported,
+# Exporter is no longer used, though EXPORT variables are still used
+# to make the code easier to read. see how $USE_OUR_ST is used
 
-@ISA = qw(Exporter DynaLoader);
+use vars qw(@ISA @EXPORT_OK @EXPORT $USE_OUR_ST);
 
-# Items to export into callers namespace by default. Note: do not export
-# names by default without a very good reason. Use EXPORT_OK instead.
-# Do not simply export all your public functions/methods/constants.
+@ISA = qw(DynaLoader);
 
-# This allows declaration	use BSD::stat ':all';
-# If you do not need this, moving things directly into @EXPORT or @EXPORT_OK
-# will save memory.
+@EXPORT_OK = 
+    qw( 
+	$st_dev $st_ino $st_mode $st_nlink $st_uid $st_gid $st_rdev $st_size 
+	$st_atime $st_mtime $st_ctime $st_blksize $st_blocks
+	$st_atimensec $st_mtimensec $st_ctimensec $st_flags $st_gen
+	);
 
-%EXPORT_TAGS = ( 'all' => [ qw(
-	
-) ] );
+@EXPORT = 
+    qw(
+       stat
+       lstat
+       chflags
+       UF_SETTABLE
+       UF_NODUMP
+       UF_IMMUTABLE
+       UF_APPEND
+       UF_OPAQUE
+       UF_NOUNLINK
+       SF_SETTABLE
+       SF_ARCHIVED
+       SF_IMMUTABLE
+       SF_APPEND
+       SF_NOUNLINK
+       );
 
-@EXPORT_OK = ( @{ $EXPORT_TAGS{'all'} } );
+$USE_OUR_ST = 0;
 
-@EXPORT = qw(
-	     stat
-	     lstat
-	     chflags
-	     UF_SETTABLE
-	     UF_NODUMP
-	     UF_IMMUTABLE
-	     UF_APPEND
-	     UF_OPAQUE
-	     UF_NOUNLINK
-	     SF_SETTABLE
-	     SF_ARCHIVED
-	     SF_IMMUTABLE
-	     SF_APPEND
-	     SF_NOUNLINK
-	     );
+sub import{
+    no strict 'refs';
+    my $pkg = shift;
+    my $callpkg = caller();
+    if (my ($flag) = @_){  # we have an arg
+	if ($flag eq ":FIELDS"){
+	    # import everything available
+	    @_ = (@{"$pkg\::EXPORT"}, @{"$pkg\::EXPORT_OK"});
+	    $USE_OUR_ST = 1;
+	}else{
+	    # just use the supplied list
+	}
+    }else{ # no arg.  Default @EXPORT used;
+		@_ = @{"$pkg\:\:EXPORT"};
+	}
+    for my $sym (@_) {
+	no warnings;
+	$sym =~ s/^([\$\@\%\*\&])//o;
+	*{"$callpkg\::$sym"} = 
+	    ($1 eq '$') ? \${"$pkg\::$sym"} :
+	    ($1 eq '@') ? \@{"$pkg\::$sym"} :
+	    ($1 eq '%') ? \%{"$pkg\::$sym"} :
+	    ($1 eq '*') ? \*{"$pkg\::$sym"} : \&{"$pkg\::$sym"};
+    }
+}
 
 bootstrap BSD::stat $VERSION; # make XS available;
 
-use constant Field =>{
+my $field = {
     dev       =>  0,
     ino       =>  1,
     mode      =>  2,
@@ -76,10 +102,23 @@ use constant Field =>{
 
 # define attribute methods all at once w/o AUTOLOAD
 
-while (my ($method, $index) = each %{Field()}){
+while (my ($method, $index) = each %{$field}){
     no strict 'refs';
     *$method = sub{ $_[0]->[$index] };
 }
+
+# "my" subroutine which is invisible from other package
+
+my $set_our_st = sub 
+{
+    no strict 'vars'; no warnings;
+    ( 
+      $st_dev, $st_ino, $st_mode, $st_nlink, $st_uid, $st_gid, $st_rdev, 
+      $st_size, $st_atime, $st_mtime, $st_ctime, $st_blksize, $st_blocks,
+      $st_atimensec, $st_mtimensec, $st_ctimensec, $st_flags, $st_gen,
+      ) = @{$_[0]};
+};
+
 
 sub DESTROY{
     $DEBUG or return;
@@ -94,6 +133,7 @@ sub stat(;$){
     my $self = 
 	ref \$arg eq 'SCALAR' ? xs_stat($arg) : xs_fstat(fileno($arg), 0);
     defined $self or return;
+    $USE_OUR_ST and $set_our_st->($self);
     return wantarray ? @$self : bless $self;
 }
 
@@ -102,8 +142,10 @@ sub lstat(;$){
     my $self =
 	ref \$arg eq 'SCALAR' ? xs_lstat($arg) : xs_fstat(fileno($arg), 1);
     defined $self or return;
+    $USE_OUR_ST and $set_our_st->($self);
     return wantarray ? @$self : bless $self;
 }
+
 
 # chflag implementation
 # see <sys/stat.h>
@@ -172,6 +214,12 @@ BSD::stat - stat() with BSD 4.4 extentions
     print "$file is executable with lotsa links\n";
   }
 
+  use BSD::stat qw(:FIELDS);
+  stat($file) or die "No $file: $!";
+  if ( ($st_mode & 0111) && $st_nlink > 1) ) {
+      print "$file is executable with lotsa links\n";
+  } 
+
   # chflags
 
   chflags(UF_IMMUTABLE, @files)
@@ -182,7 +230,10 @@ This module's default exports override the core stat() and
 lstat() functions, replacing them with versions that contain BSD 4.4
 extentions such as file flags.  This module also adds chflags function.
 
-Here are the meaning of the fields:
+=head2 BSD::stat vs. CORE::stat
+
+When called as array context, C<lstat()> and C<stat()> return an array
+like CORE::stat. Here are the meaning of the fields:
 
   0 dev        device number of filesystem
   1 ino        inode number
@@ -203,15 +254,31 @@ Here are the meaning of the fields:
  16 flags      user defined flags for file
  17 gen        file generation number
 
-When called as array context, lstat() and stat() return an array
-like CORE::stat.  When called as scalar context, it returns an
-object whose methods are named as above, just like File::stat.
-
-Like CORE::stat(), BSD::stat supports _ filehandle.  It does set "stat
+Like CORE::stat, BSD::stat supports _ filehandle.  It does set "stat
 cache" so the following -x _ operators can benefit.  Be careful,
 however, that BSD::stat::stat(_) will not work (or cannot be made to
 work) because BSD::stat::stat() holds more info than that is stored in
 Perl's internal stat cache.
+
+=head2 BSD::stat vs File::stat
+
+When called as scalar context, it returns an object whose methods are
+named as above, just like File::stat. 
+
+Like File::stat, You may also import all the structure fields directly
+nto yournamespace as regular variables using the :FIELDS import tag.
+(Note that this still overrides your stat() and lstat() functions.)
+Access these fields as variables named with a preceding C<st_> in
+front their method names. Thus, C<$stat_obj-E<gt>dev()> corresponds to
+$st_dev if you import the fields.
+
+Note:  besides polluting the name space, :FIELDS comes with
+performance penalty for setting extra variables.  Unlike File::stat
+which always sets $File::stat::st_* (even when not exported),
+BSD::stat implements its own import mechanism to prevent performance
+loss when $st_* is not needed
+
+=head2 chflags
 
 BSD::stat also adds chflags().  Like CORE::chmod it takes first
 argument as flags and any following arguments as filenames.  
@@ -241,27 +308,28 @@ to unset all flags, simply
 
   chflags 0, @files;
 
-=head2 PERFORMANCE
+=head1 PERFORMANCE
 
 You can use t/benchmark.pl to test the perfomance.  Here is the result
-on my FreeBSD.
+on my FreeBSD box.
 
-Benchmark: timing 100000 iterations of BSD::stat, Core::stat,
-File::stat...
-BSD::stat:  3 wallclock secs ( 2.16 usr +  0.95 sys =  3.11 CPU) @
+  Benchmark: timing 100000 iterations of BSD::stat, Core::stat,
+  File::stat...
+  BSD::stat:  3 wallclock secs ( 2.16 usr +  0.95 sys =  3.11 CPU) @
 32160.80/s (n=100000)
-Core::stat:  1 wallclock secs ( 1.18 usr +  0.76 sys =  1.94 CPU) @
+  Core::stat:  1 wallclock secs ( 1.18 usr +  0.76 sys =  1.94 CPU) @
 51612.90/s (n=100000)
-File::stat:  7 wallclock secs ( 6.40 usr +  0.93 sys =  7.33 CPU) @
+  File::stat:  7 wallclock secs ( 6.40 usr +  0.93 sys =  7.33 CPU) @
 13646.06/s (n=100000)
 
 Not too bad, huh?
 
-=head2 EXPORT
+=head1 EXPORT
 
 stat(), lstat(), chflags() and chflags-related constants are exported
+as default. $st_* variables are also exported when used with :FIELDS
 
-=head2 BUGS
+=head1 BUGS
 
 This is the best approximation of CORE::stat() and File::stat::stat()
 that module can go.

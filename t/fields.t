@@ -1,5 +1,5 @@
 #
-# $Id: object.t,v 1.0 2002/01/11 10:12:10 dankogai Exp $
+# $Id: fields.t,v 1.10 2002/01/11 15:54:48 dankogai Exp dankogai $
 #
 # Before `make install' is performed this script should be runnable with
 # `make test'. After `make install' it should work as `perl test.pl'
@@ -11,19 +11,18 @@
 use Test;
 use strict;
 my $Debug = 0;
-BEGIN { plan tests => 13 };
+BEGIN { plan tests => 18 };
 
-use BSD::stat;
-
-use File::stat ();
+use BSD::stat qw(:FIELDS);
 my $bsdstat = lstat($0);
-my $perlstat = File::stat::lstat($0);
 
-no strict 'refs';
 for my $s (qw(dev ino mode nlink uid gid rdev size
-	      atime mtime ctime blksize blocks))
+	      atime mtime ctime blksize blocks
+	      atimensec mtimensec  ctimensec flags gen))
 {
-    $perlstat->$s() == $bsdstat->$s() ? ok(1) : ok(0);
+    no strict; 
+    $Debug and warn "\$st_$s = ", ${"st_$s"};
+    ok($bsdstat->$s() == ${"st_$s"});
 }
-use strict;
+
 $Debug and print $bsdstat->dev, "\n";
