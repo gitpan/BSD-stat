@@ -1,4 +1,4 @@
-#$Id: stat.pm,v 0.22 2001/12/17 00:03:46 dankogai Exp dankogai $
+#$Id: stat.pm,v 0.23 2001/12/17 03:47:35 dankogai Exp dankogai $
 
 package BSD::stat;
 
@@ -13,8 +13,8 @@ use AutoLoader;
 
 use vars qw($RCSID $VERSION);
 
-$RCSID = q$Id: stat.pm,v 0.22 2001/12/17 00:03:46 dankogai Exp dankogai $;
-$VERSION = do { my @r = (q$Revision: 0.22 $ =~ /\d+/g); sprintf "%d."."%02d" x $#r, @r };
+$RCSID = q$Id: stat.pm,v 0.23 2001/12/17 03:47:35 dankogai Exp dankogai $;
+$VERSION = do { my @r = (q$Revision: 0.23 $ =~ /\d+/g); sprintf "%d."."%02d" x $#r, @r };
 
 use vars qw(@ISA %EXPORT_TAGS @EXPORT_OK @EXPORT);
 
@@ -94,8 +94,8 @@ sub anystat{
     }else{          # returns an object as in File::stat
 	my ($path,$type) = @_;
 	my $pkg = caller;
-	my $self  =  xs_stat($path, $type);	
-	bless $self, $pkg;
+	my $self  =  xs_stat($path, $type);
+	return @$self ? bless $self, $pkg : undef;
     }
 }
 

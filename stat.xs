@@ -1,5 +1,5 @@
 /*
- * $Id: stat.xs,v 0.1 2001/12/16 22:13:01 dankogai Exp $
+ * $Id: stat.xs,v 0.23 2001/12/17 03:46:39 dankogai Exp dankogai $
  */
 
 #include "EXTERN.h"
@@ -32,8 +32,8 @@ setbang(int err)
 
 static AV *
 xs_stat(char *path, int type){
-    AV * result = newAV();
     struct stat st;
+    AV * result = newAV();
     int err = (type == 0) ? lstat(path, &st) : stat(path, &st);
     if (setbang(err)){
 	return result;
