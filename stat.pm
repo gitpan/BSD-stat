@@ -1,4 +1,4 @@
-#$Id: stat.pm,v 1.10 2002/01/11 15:54:48 dankogai Exp dankogai $
+#$Id: stat.pm,v 1.11 2002/01/11 19:22:12 dankogai Exp dankogai $
 
 package BSD::stat;
 
@@ -13,8 +13,8 @@ use AutoLoader;
 
 use vars qw($RCSID $VERSION $DEBUG);
 
-$RCSID = q$Id: stat.pm,v 1.10 2002/01/11 15:54:48 dankogai Exp dankogai $;
-$VERSION = do { my @r = (q$Revision: 1.10 $ =~ /\d+/g); sprintf "%d."."%02d" x $#r, @r };
+$RCSID = q$Id: stat.pm,v 1.11 2002/01/11 19:22:12 dankogai Exp dankogai $;
+$VERSION = do { my @r = (q$Revision: 1.11 $ =~ /\d+/g); sprintf "%d."."%02d" x $#r, @r };
 
 # In favor of speed, especially when $st_ series variables are exported,
 # Exporter is no longer used, though EXPORT variables are still used
@@ -67,7 +67,7 @@ sub import{
 		@_ = @{"$pkg\:\:EXPORT"};
 	}
     for my $sym (@_) {
-	no warnings;
+	local $^W = 0;
 	$sym =~ s/^([\$\@\%\*\&])//o;
 	*{"$callpkg\::$sym"} = 
 	    ($1 eq '$') ? \${"$pkg\::$sym"} :
@@ -111,7 +111,8 @@ while (my ($method, $index) = each %{$field}){
 
 my $set_our_st = sub 
 {
-    no strict 'vars'; no warnings;
+    no strict 'vars';
+    local $^W = 0;
     ( 
       $st_dev, $st_ino, $st_mode, $st_nlink, $st_uid, $st_gid, $st_rdev, 
       $st_size, $st_atime, $st_mtime, $st_ctime, $st_blksize, $st_blocks,
