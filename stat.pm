@@ -1,20 +1,19 @@
-#$Id: stat.pm,v 1.21 2002/01/28 15:54:24 dankogai Exp dankogai $
+#$Id: stat.pm,v 1.31 2012/08/19 15:46:15 dankogai Exp dankogai $
 
 package BSD::stat;
 
 use 5.00503;
 use strict;
-# use warnings;
+use warnings;
 use Carp;
 
 require Exporter;
 require DynaLoader;
 use AutoLoader;
 
-use vars qw($RCSID $VERSION $DEBUG);
+use vars qw($VERSION $DEBUG);
 
-$RCSID = q$Id: stat.pm,v 1.21 2002/01/28 15:54:24 dankogai Exp dankogai $;
-$VERSION = do { my @r = (q$Revision: 1.21 $ =~ /\d+/g); sprintf "%d."."%02d" x $#r, @r };
+$VERSION = sprintf "%d.%02d", q$Revision: 1.31 $ =~ /(\d+)/g;
 
 # In favor of speed, especially when $st_ series variables are exported,
 # Exporter is no longer used, though EXPORT variables are still used
@@ -36,6 +35,8 @@ use vars qw(@ISA @EXPORT_OK @EXPORT $USE_OUR_ST);
        stat
        lstat
        chflags
+       utimes
+       lutimes
        UF_SETTABLE
        UF_NODUMP
        UF_IMMUTABLE
@@ -67,7 +68,7 @@ sub import{
 		@_ = @{"$pkg\:\:EXPORT"};
 	}
     for my $sym (@_) {
-	local $^W = 0;
+        no warnings 'uninitialized';
 	$sym =~ s/^([\$\@\%\*\&])//o;
 	*{"$callpkg\::$sym"} = 
 	    ($1 eq '$') ? \${"$pkg\::$sym"} :
@@ -120,7 +121,6 @@ my $set_our_st = sub
       ) = @{$_[0]};
 };
 
-
 sub DESTROY{
     $DEBUG or return;
     carp "Destroying ", __PACKAGE__;
@@ -147,7 +147,6 @@ sub lstat(;$){
     return wantarray ? @$self : bless $self;
 }
 
-
 # chflag implementation
 # see <sys/stat.h>
 
@@ -168,6 +167,30 @@ sub chflags{
     my $count = 0;
     for my $f (@_){
 	xs_chflags($f, $flags) == 0 and $count++;
+    }
+    $count;
+}
+
+sub utimes {
+    my $atime = shift;
+    my $mtime = shift;
+    my $count = 0;
+    for my $f (@_) {
+        (
+         ref \$f eq 'SCALAR'
+         ? xs_utimes( $atime, $mtime, $f )
+         : xs_futimes( $atime, $mtime, fileno($f) )
+        ) == 0 and $count++;
+    }
+    $count;
+}
+
+sub lutimes {
+    my $atime = shift;
+    my $mtime = shift;
+    my $count = 0;
+    for my $f (@_) {
+        xs_lutimes( $atime, $mtime, $f ) == 0 and $count++;
     }
     $count;
 }
@@ -224,6 +247,11 @@ BSD::stat - stat() with BSD 4.4 extentions
   # chflags
 
   chflags(UF_IMMUTABLE, @files)
+
+  # utimes, lutimes
+  my $when = 1234567890.987654;
+  utimes $when, $when, @files;
+  lutimes $when, $when, @links;
 
 =head1 DESCRIPTION
 
@@ -309,6 +337,14 @@ to unset all flags, simply
 
   chflags 0, @files;
 
+=head1 utimes and lutimes
+
+C<utimes()> is identical to C<utime()> except fractional time is accepted.
+
+C<lutimes()> is identical to C<utimes()> except when the path is
+symbolic link, in which case it changes the time stamp of the symlink
+link instead of the file it links to.
+
 =head1 PERFORMANCE
 
 You can use t/benchmark.pl to test the perfomance.  Here is the result
@@ -341,23 +377,51 @@ that does not appear in "perldoc perlapi" and such.
 
 Very BSD specific.  It will not work on any other platform.
 
+=head1 SEE ALSO
+
+L<chflags/2>
+L<stat/2>
+L<File::stat>
+L<perlfunc/-x>
+L<perlfunc/stat>
+
+=head1 SUPPORT
+
+You can find documentation for this module with the perldoc command.
+
+    perldoc BSD::stat
+
+You can also look for information at:
+
+=over 4
+
+=item * RT: CPAN's request tracker
+
+L<http://rt.cpan.org/NoAuth/Bugs.html?Dist=BSD-stat>
+
+=item * AnnoCPAN: Annotated CPAN documentation
+
+L<http://annocpan.org/dist/BSD-stat>
+
+=item * CPAN Ratings
+
+L<http://cpanratings.perl.org/d/BSD-stat>
+
+=item * Search CPAN
+
+L<http://search.cpan.org/dist/BSD-stat/>
+
+=back
+
 =head1 AUTHOR
 
 Dan Kogai E<lt>dankogai@dan.co.jpE<gt>
 
-=head1 SEE ALSO
+=head1 COPYRIGHT & LICENSE
 
-L<chflags(2)>
-L<stat(2)>
-L<File::stat>
-L<perldoc -f -x>
-L<perdoc -f stat>
+Copyright 2001-2009 Dan Kogai, all rights reserved.
 
-=head1 COPYRIGHT
-
-Copyright 2001 Dan Kogai <dankogai@dan.co.jp>
-
-This library is free software; you can redistribute it
-and/or modify it under the same terms as Perl itself.
+This program is free software; you can redistribute it and/or modify it
+under the same terms as Perl itself.
 
 =cut
